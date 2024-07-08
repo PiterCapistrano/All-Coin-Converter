@@ -44,6 +44,9 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation("io.ktor:ktor-client-core:2.0.0")
+            implementation("io.ktor:ktor-client-cio:2.0.0") // ou outra engine como okHttp
+            implementation("io.ktor:ktor-client-serialization:2.0.0")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
