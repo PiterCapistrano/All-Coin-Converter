@@ -7,49 +7,67 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    kotlin("plugin.serialization") version "1.8.0"
 }
 
 kotlin {
-    androidTarget {
+    android {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+        compilations.all {
+            kotlinOptions.jvmTarget = "11"
         }
     }
-    
+
     jvm("desktop")
-    
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
-    
+
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
     sourceSets {
-        val desktopMain by getting
-        
-        androidMain.dependencies {
-            implementation(compose.preview)
-            implementation(libs.androidx.activity.compose)
+        val commonMain by getting {
+            dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
+                implementation("io.ktor:ktor-client-core:2.0.0")
+                implementation("io.ktor:ktor-client-cio:2.0.0")
+                implementation("io.ktor:ktor-client-content-negotiation:2.0.0")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+            }
         }
-        commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation("io.ktor:ktor-client-core:2.0.0")
-            implementation("io.ktor:ktor-client-cio:2.0.0") // ou outra engine como okHttp
-            implementation("io.ktor:ktor-client-serialization:2.0.0")
+
+        val androidMain by getting {
+            dependencies {
+                implementation(compose.preview)
+                implementation(libs.androidx.activity.compose)
+            }
         }
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
+
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+            }
+        }
+
+        val iosMain by creating {
+            dependsOn(commonMain)
+        }
+
+        val iosX64Main by getting {
+            dependsOn(iosMain)
+        }
+
+        val iosArm64Main by getting {
+            dependsOn(iosMain)
+        }
+
+        val iosSimulatorArm64Main by getting {
+            dependsOn(iosMain)
         }
     }
 }
@@ -69,10 +87,8 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
+    packagingOptions {
+        resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
     }
     buildTypes {
         getByName("release") {
@@ -88,7 +104,6 @@ android {
     }
     dependencies {
         debugImplementation(compose.uiTooling)
-
     }
 }
 
@@ -102,4 +117,9 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+repositories {
+    google()
+    mavenCentral()
 }
