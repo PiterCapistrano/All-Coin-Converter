@@ -1,3 +1,4 @@
+import Api.ExchangeRateApiClient.fetchExchangeRates
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+
 @Composable
 fun Home() {
     var dollar by remember { mutableStateOf("") }
@@ -23,19 +25,14 @@ fun Home() {
     var selectedCurrencyFrom by remember { mutableStateOf("USD") }
     var selectedCurrencyTo by remember { mutableStateOf("BRL") }
 
-    val currencyList = listOf(
-        "USD",
-        "EUR",
-        "BRL",
-        "JPY",
-        "GBP",
-        "AUD",
-        "CAD",
-        "CHF",
-        "CNY",
-        "SEK",
-        "BitCoin",
-        "Ethereum")
+    var exchangeRates by remember { mutableStateOf<Map<String, Double>>(emptyMap()) }
+    val currencyList = exchangeRates.keys.toList()
+
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        exchangeRates = fetchExchangeRates()
+    }
 
     Scaffold(
         topBar = {
@@ -87,7 +84,9 @@ fun Home() {
                     if (dollar.isEmpty()) {
                         real = ""
                     } else {
-                        val convertedValue = dollar.toDouble() * 5.68 // Lógica de conversão temporária
+                        val rateFrom = exchangeRates[selectedCurrencyFrom] ?: 1.0
+                        val rateTo = exchangeRates[selectedCurrencyTo] ?: 1.0
+                        val convertedValue = dollar.toDouble() * (rateTo / rateFrom)
                         real = convertedValue.toString()
                     }
                 },
@@ -104,7 +103,9 @@ fun Home() {
                     if (real.isEmpty()) {
                         dollar = ""
                     } else {
-                        val convertedValue = real.toDouble() / 5.68 // Lógica de conversão temporária
+                        val rateFrom = exchangeRates[selectedCurrencyFrom] ?: 1.0
+                        val rateTo = exchangeRates[selectedCurrencyTo] ?: 1.0
+                        val convertedValue = real.toDouble() * (rateFrom / rateTo)
                         dollar = convertedValue.toString()
                     }
                 },
