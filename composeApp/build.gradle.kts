@@ -33,11 +33,13 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.components.resources)
                 implementation(compose.components.uiToolingPreview)
+                implementation(libs.ktor.client.core)
                 implementation("io.ktor:ktor-client-core:2.0.0")
                 implementation("io.ktor:ktor-client-cio:2.0.0")
                 implementation("io.ktor:ktor-client-content-negotiation:2.0.0")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
 
@@ -45,6 +47,8 @@ kotlin {
             dependencies {
                 implementation(compose.preview)
                 implementation(libs.androidx.activity.compose)
+                implementation(libs.ktor.client.okhttp)
+                implementation(libs.kotlinx.coroutines.android)
             }
         }
 
@@ -68,6 +72,10 @@ kotlin {
 
         val iosSimulatorArm64Main by getting {
             dependsOn(iosMain)
+        }
+
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
     }
 }
