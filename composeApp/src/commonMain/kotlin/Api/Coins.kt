@@ -1,5 +1,8 @@
 package Api
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Coins(
     val USD: Double? = null,
     val AED: Double? = null,

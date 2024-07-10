@@ -1,3 +1,4 @@
+import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -27,6 +28,9 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+
+                val ktor_version = "2.3.12"
+
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material)
@@ -36,10 +40,10 @@ kotlin {
                 implementation(libs.ktor.client.core)
                 implementation("io.ktor:ktor-client-core:2.0.0")
                 implementation("io.ktor:ktor-client-cio:2.0.0")
-                implementation("io.ktor:ktor-client-content-negotiation:2.0.0")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.0")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
                 implementation(libs.kotlinx.coroutines.core)
+                implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
             }
         }
 
