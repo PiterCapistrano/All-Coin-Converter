@@ -1,3 +1,4 @@
+import Api.Coins
 import Api.ExchangeRateApiClient.fetchExchangeRates
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,15 +16,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun Home() {
-    var dollar by remember { mutableStateOf("") }
-    var real by remember { mutableStateOf("") }
+    var firstCoin by remember { mutableStateOf("") }
+    var secondCoin by remember { mutableStateOf("") }
 
-    var selectedCurrencyFrom by remember { mutableStateOf("USD") }
-    var selectedCurrencyTo by remember { mutableStateOf("BRL") }
+    var selectedCurrencyFrom by remember { mutableStateOf("") }
+    var selectedCurrencyTo by remember { mutableStateOf("") }
 
     var exchangeRates by remember { mutableStateOf<Map<String, Double>>(emptyMap()) }
     val currencyList = exchangeRates.keys.toList()
@@ -31,7 +33,9 @@ fun Home() {
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        exchangeRates = fetchExchangeRates()
+        scope.launch {
+            exchangeRates = fetchExchangeRates()
+        }
     }
 
     Scaffold(
@@ -78,16 +82,16 @@ fun Home() {
                 }
             }
             CurrencyInputField(
-                value = dollar,
+                value = firstCoin,
                 onValueChange = {
-                    dollar = it
-                    if (dollar.isEmpty()) {
-                        real = ""
+                    firstCoin = it
+                    if (firstCoin.isEmpty()) {
+                        secondCoin = ""
                     } else {
                         val rateFrom = exchangeRates[selectedCurrencyFrom] ?: 1.0
                         val rateTo = exchangeRates[selectedCurrencyTo] ?: 1.0
-                        val convertedValue = dollar.toDouble() * (rateTo / rateFrom)
-                        real = convertedValue.toString()
+                        val convertedValue = firstCoin.toDouble() * (rateTo / rateFrom)
+                        secondCoin = convertedValue.toString()
                     }
                 },
                 label = "Amount",
@@ -97,16 +101,16 @@ fun Home() {
             )
 
             CurrencyInputField(
-                value = real,
+                value = secondCoin,
                 onValueChange = {
-                    real = it
-                    if (real.isEmpty()) {
-                        dollar = ""
+                    secondCoin = it
+                    if (secondCoin.isEmpty()) {
+                        firstCoin = ""
                     } else {
                         val rateFrom = exchangeRates[selectedCurrencyFrom] ?: 1.0
                         val rateTo = exchangeRates[selectedCurrencyTo] ?: 1.0
-                        val convertedValue = real.toDouble() * (rateFrom / rateTo)
-                        dollar = convertedValue.toString()
+                        val convertedValue = secondCoin.toDouble() * (rateFrom / rateTo)
+                        firstCoin = convertedValue.toString()
                     }
                 },
                 label = "Converted Amount",
